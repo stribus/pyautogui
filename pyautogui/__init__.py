@@ -179,6 +179,8 @@ def raisePyAutoGUIImageNotFoundException(wrappedFunction):
 try:
     import pyscreeze
     from pyscreeze import center, pixel, pixelMatchesColor, screenshot
+    from PIL import Image    
+    import io, base64
 
     # Change the locate*() functions so that they raise PyAutoGUI's ImageNotFoundException instead.
     @raisePyAutoGUIImageNotFoundException
@@ -216,6 +218,33 @@ try:
         return pyscreeze.locateOnWindow(*args, **kwargs)
 
     locateOnWindow.__doc__ = pyscreeze.locateOnWindow.__doc__
+    
+    def ImageToBase64(image, format='PNG'):
+        """Converts an image to a base64 string.
+
+        Args:
+            image (Image): The image to convert.
+            format (str, optional): The format of the image. Defaults to 'PNG'.
+
+        Returns:
+            str: The base64 string of the image.
+        """
+        imgByteArr = io.BytesIO()
+        image.save(imgByteArr, format)
+        imgByteArr = imgByteArr.getvalue()
+        return base64.b64encode(imgByteArr).decode('utf-8')    
+    
+    def Base64ToImage(base64_string):
+        """Converts a base64 string to an Image.
+        
+        Args:
+            base64_string (str): The base64 string to convert.
+            
+        Returns:
+            Image: The image.
+        """
+        imgdata = base64.b64decode(base64_string)
+        return Image.open(io.BytesIO(imgdata))
 
 
 except ImportError:
